@@ -1,0 +1,395 @@
+
+library(readxl)
+library(lme4)
+library(lmerTest)
+library(sjPlot)
+library(blme)
+library(reshape2)
+library(ggplot2)
+library(DescTools)
+library(emmeans)
+library(tidyr)
+library(dplyr)
+library(gt)
+
+tutors_alignment_filename <- "C:/Users/Dorot/OneDrive/Documents/Research Data/linguistic_alignment_and_outcomes/full_data/by_tutor_metrics/alignment_summed_by_tutor_to_student_no_outcomes.xlsx"
+students_alignment_filename <- "C:/Users/Dorot/OneDrive/Documents/Research Data/linguistic_alignment_and_outcomes/full_data/by_tutor_metrics/alignment_summed_by_student_no_outcomes_to_tutor.xlsx"
+students_students_alignment_filename <- "C:/Users/Dorot/OneDrive/Documents/Research Data/linguistic_alignment_and_outcomes/full_data/by_tutor_metrics/alignment_summed_by_student_no_outcomes_to_student.xlsx"
+
+tutors_alignment_filename_baseline <- "C:/Users/Dorot/OneDrive/Documents/Research Data/linguistic_alignment_and_outcomes/full_data/by_tutor_metrics_baseline/alignment_summed_by_tutor_to_student_no_outcomes_baseline.xlsx"
+students_alignment_filename_baseline <- "C:/Users/Dorot/OneDrive/Documents/Research Data/linguistic_alignment_and_outcomes/full_data/by_tutor_metrics_baseline/alignment_summed_by_student_no_outcomes_to_tutor_baseline.xlsx"
+students_students_alignment_filename_baseline <- "C:/Users/Dorot/OneDrive/Documents/Research Data/linguistic_alignment_and_outcomes/full_data/by_tutor_metrics_baseline/alignment_summed_by_student_no_outcomes_to_student_baseline.xlsx"
+
+
+alignment_tutors_gold <- read_excel(tutors_alignment_filename)
+alignment_tutors_baseline <- read_excel(tutors_alignment_filename_baseline)
+alignment_comparison_tutor <- merge(alignment_tutors_gold, alignment_tutors_baseline,  by = c("tutor", "student_ID"), all.x = FALSE, all.y = FALSE, suffixes = c("_gold", "_baseline"))
+alignment_comparison_tutor["speaker_order"] <- "tutor>student"
+
+df <- aggregate(alignment_tutors_gold, by = list(alignment_tutors_gold$tutor), FUN = mean, na.rm = T)
+
+vars <- c( "syntax_penn_tok2", "lexical_lem2", "cosine_semanticL")
+tab_corr(df[vars], triangle = "upper")
+
+
+alignment_students_gold <- read_excel(students_alignment_filename)
+alignment_students_baseline <- read_excel(students_alignment_filename_baseline)
+alignment_comparison_student <- merge(alignment_students_gold, alignment_students_baseline,  by = c("tutor", "student_ID"), all.x = FALSE, all.y = FALSE, suffixes = c("_gold", "_baseline"))
+alignment_comparison_student["speaker_order"] <- "student>tutor"
+
+alignment_students_students_gold <- read_excel(students_students_alignment_filename)
+alignment_students_students_baseline <- read_excel(students_students_alignment_filename_baseline)
+alignment_comparison_student_student <- merge(alignment_students_students_gold, alignment_students_students_baseline,  by = c("student_ID", "target_student_ID"), all.x = FALSE, all.y = FALSE, suffixes = c("_gold", "_baseline"))
+alignment_comparison_student_student["speaker_order"] <- "student>student"
+
+student_outcomes_filename <- "C:/Users/Dorot/OneDrive/Documents/Research Data/linguistic_alignment_and_outcomes/full_data/outcomes/Student_Achievement_Intercept_Slope_10_23_2024.csv"
+outcomes <-read.csv(student_outcomes_filename)
+outcomes <- outcomes %>% distinct(tutor, student_ID, .keep_all = TRUE)
+
+alignment_comparison_no_outcomes <- rbind(alignment_comparison_student, alignment_comparison_tutor)
+
+alignment_comparison_tutor <- merge(alignment_comparison_tutor, outcomes,  by = c("tutor", "student_ID"), all.x = FALSE, all.y = FALSE)
+alignment_comparison_student <- merge(alignment_comparison_student, outcomes,  by = c("tutor", "student_ID"), all.x = FALSE, all.y = FALSE)
+
+alignment_comparison <- rbind(alignment_comparison_student, alignment_comparison_tutor)
+
+# Number of unique tutor IDs in file
+(length(unique(alignment_comparison[["student_ID"]])))
+(length(unique(alignment_comparison_student_student[["student_ID"]])))
+
+
+vars = c("syntax_penn_tok2_gold", "syntax_penn_tok2_baseline", "speaker_order")
+alignment_comparison_both.melt_1 <- melt(alignment_comparison[c(vars, "tutor")], id = c("tutor", "speaker_order"))
+colnames(alignment_comparison_both.melt_1) <- c("tutor", "speaker_order", "condition", "syntax_penn_tok2")
+alignment_comparison_both.melt_1$condition <- ifelse(alignment_comparison_both.melt_1$condition == "syntax_penn_tok2_gold", "gold", "baseline")
+
+vars <- c("lexical_lem2_gold", "lexical_lem2_baseline", "speaker_order")
+alignment_comparison_both.melt_2 <- melt(alignment_comparison[c(vars, "tutor")], id = c("tutor", "speaker_order"))
+colnames(alignment_comparison_both.melt_2) <- c("tutor", "speaker_order", "condition", "lexical_lem2")
+alignment_comparison_both.melt_2$condition <- ifelse(alignment_comparison_both.melt_2$condition == "lexical_lem2_gold", "gold", "baseline")
+
+vars <- c("cosine_semanticL_gold", "cosine_semanticL_baseline", "speaker_order")
+alignment_comparison_both.melt_3 <- melt(alignment_comparison[c(vars, "tutor")], id = c("tutor", "speaker_order"))
+colnames(alignment_comparison_both.melt_3) <- c("tutor", "speker_order", "condition", "cosine_semanticL")
+alignment_comparison_both.melt_3$condition <- ifelse(alignment_comparison_both.melt_3$condition == "cosine_semanticL_gold", "gold", "baseline")
+
+alignment_comparison_both.melt <- cbind(alignment_comparison_both.melt_1, alignment_comparison_both.melt_2$lexical_lem2,  alignment_comparison_both.melt_3$cosine_semanticL)
+colnames(alignment_comparison_both.melt) <- c("tutor", "speaker_order", "condition", "syntax_penn_tok2", "lexical_lem2", "cosine_semanticL")
+
+
+
+
+melted_data <- melt(alignment_comparison_both.melt, id.vars = c("speaker_order", "condition", "tutor"),
+                    variable.name = "variable", value.name = "value")
+
+a_c <- merge(alignment_comparison_student, alignment_comparison_tutor, by = c("tutor", "student_ID", "Intercept", "Slope"), suffixes = c("_student", "_tutor"))
+
+a_c$syn_sem_tut_stu <- rowMeans(a_c[c("syntax_penn_tok2_gold_tutor", "syntax_penn_tok2_gold_student", "cosine_semanticL_gold_tutor", "cosine_semanticL_gold_student")], na.rm = T)
+
+vars <- c( "syntax_penn_tok2_gold_student", "lexical_lem2_gold_student", "cosine_semanticL_gold_student", "syn_sem_tut_stu", "Intercept", "Slope")
+tab_corr(a_c[vars], triangle = "lower")
+
+vars <- c( "syntax_penn_tok2_gold_tutor", "lexical_lem2_gold_tutor", "cosine_semanticL_gold_tutor", "syn_sem_tut_stu", "Intercept", "Slope")
+tab_corr(a_c[vars], triangle = "upper")
+
+
+a_c$syntax_penn_tok2_gold_tutorW <- scale(DescTools::Winsorize(a_c$syntax_penn_tok2_gold_tutor, val = quantile(a_c$syntax_penn_tok2_gold_tutor, probs = c(0.0, 0.99), na.rm = T)))
+a_c$syntax_penn_tok2_gold_studentW <- scale(DescTools::Winsorize(a_c$syntax_penn_tok2_gold_student, val = quantile(a_c$syntax_penn_tok2_gold_student, probs = c(0.0, 0.97), na.rm = T)))
+
+hist(a_c$syntax_penn_tok2_gold_studentW)
+
+a_c$lexical_lem2_gold_tutorW <- scale(DescTools::Winsorize(a_c$lexical_lem2_gold_tutor, val = quantile(a_c$lexical_lem2_gold_tutor, probs = c(0.0, 0.99), na.rm = T)))
+a_c$lexical_lem2_gold_studentW <- scale(DescTools::Winsorize(a_c$lexical_lem2_gold_student, val = quantile(a_c$lexical_lem2_gold_student, probs = c(0.0, 0.99), na.rm = T)))
+
+a_c$syn_sem_tut_stuW <- scale(DescTools::Winsorize(a_c$syn_sem_tut_stu, val = quantile(a_c$syn_sem_tut_stu, probs = c(0.0, 0.99), na.rm = T)))
+
+a_c$InterceptZ <- scale(a_c$Intercept)
+a_c$SlopeZ <- scale(a_c$Slope)
+
+vars <- c( "syntax_penn_tok2_gold_studentW", "lexical_lem2_gold_studentW", "cosine_semanticL_gold_student", "syn_sem_tut_stuW", "InterceptZ", "SlopeZ")
+tab_corr(a_c[vars], triangle = "lower")
+#
+vars <- c( "syntax_penn_tok2_gold_tutorW", "lexical_lem2_gold_tutorW", "cosine_semanticL_gold_tutor", "syn_sem_tut_stuW", "Intercept", "Slope")
+tab_corr(a_c[vars], triangle = "upper")
+
+
+plot(a_c$syntax_penn_tok2_gold_studentW, a_c$cosine_semanticL_gold_student)
+#
+# cor(a_c$lexical_lem2_gold_student, a_c$lexical_lem2_gold_tutor)
+# cor(a_c$syntax_penn_tok2_gold_student, a_c$syntax_penn_tok2_gold_tutor)
+# cor(a_c$cosine_semanticL_gold_student, a_c$cosine_semanticL_gold_tutor)
+# cor(a_c$syn_sem_tut_stu, a_c$syn_sem_tut_stu)
+
+#for data with outcomes
+correlation_data <- data.frame(
+  Student_Label = c(" ", "", "Student", "", "", ""),
+  Student = c("Syntactic", "Lexical", "Semantic", "Syn Sem Avg", "Initial Score", "Learn Rate"),
+  Syntactic = c(0.867, .251, .823, .913, -.088, 0.036),
+  Lexical = c(.183, .34, .040, .059, -0.062, -.072),
+  Semantic = c(.855, .107, 0.927, .956, -.003, 0.063),
+  Sem_Syn_Avg = c(.930, .084, .957, 1, -.025, 0.061),
+  Initial_Score = c(-0.063,	0.061,	0.035,	-0.025, 1, 0.038),
+  Learn_Rate = c(0.057,	0.009,	0.068,	0.061,	0.038, 1)
+)
+
+
+correlation_data %>%
+  gt() %>%
+  cols_label(Student = "", Student_Label= "") %>%
+  tab_spanner(label = "Tutor", columns = c(Syntactic, Lexical, Semantic, Sem_Syn_Avg, Initial_Score, Learn_Rate)) %>%
+  tab_stubhead(label = "Student") %>%
+  tab_header(title = "Student-Tutor Correlation Matrix") %>%
+  tab_style(
+    style = cell_borders(
+      sides = c("top", "bottom"), color = "transparent", weight = px(0)
+    ),
+    locations = cells_body(columns = Student_Label)  # Remove row lines from "Student_Label"
+  ) %>%
+  tab_style(
+    style = cell_borders(
+      sides = "right", color = "grey", weight = px(2)
+    ),
+    locations = cells_body(columns = Student)  # Keep left border for "Student"
+  ) %>%
+  tab_style(
+    style = cell_borders(
+      sides = c("top", "bottom", "left", "right"), color = "grey", weight = px(2)),
+    locations = list(
+      cells_body(columns = c(Syntactic, Lexical, Semantic, Sem_Syn_Avg, Initial_Score, Learn_Rate))
+    ))%>%
+  tab_style(
+    style = cell_borders(
+      sides = "bottom", color = "transparent", weight = px(2)
+    ),
+    locations = list(cells_column_labels(columns = c(Student, Student_Label)), cells_body(columns = c(Student)))
+  ) %>%
+  tab_style(
+    style = cell_borders(
+      sides = "left", color = "light_grey", weight = px(2)
+    ),
+    locations = cells_body(columns = Student)  # Keep left border for "Student"
+  )
+
+
+m1_student <- lmer(syntax_penn_tok2 ~ condition + (1 | tutor), data = subset(alignment_comparison_both.melt, speaker_order == "student>tutor"))
+
+m2_student <- lmer(lexical_lem2 ~ condition + (1 | tutor), data = subset(alignment_comparison_both.melt, speaker_order == "student>tutor"))
+
+m3_student <- lmer(cosine_semanticL ~ condition + (1 | tutor), data = subset(alignment_comparison_both.melt, speaker_order == "student>tutor"))
+
+tab_model(m1_student, m2_student, m3_student, show.std = TRUE)
+#
+# emmeans(m1_student, pairwise~condition)
+#
+# emmeans(m2_student, pairwise~condition)
+#
+# emmeans(m3_student, pairwise~condition)
+
+
+
+m1_tutor <- lmer(syntax_penn_tok2 ~ condition + (1 | tutor), data = subset(alignment_comparison_both.melt, speaker_order == "tutor>student"))
+
+m2_tutor <- lmer(lexical_lem2 ~ condition + (1 | tutor), data = subset(alignment_comparison_both.melt, speaker_order == "tutor>student"))
+
+m3_tutor <- lmer(cosine_semanticL ~ condition + (1 | tutor), data = subset(alignment_comparison_both.melt, speaker_order == "tutor>student"))
+
+# tab_model(m1_tutor, m2_tutor, m3_tutor, show.std = TRUE)
+#
+# emmeans(m1_tutor, pairwise~condition)
+#
+# emmeans(m2_tutor, pairwise~condition)
+#
+# emmeans(m3_tutor, pairwise~condition)
+
+
+plot(a_c$syntax_penn_tok2_gold_tutorW, a_c$cosine_semanticL_gold_tutorW)
+
+data <- data.frame(
+  Condition = rep(c("Baseline", "Actual"), each = 6),
+  Speaker = rep(c("Tutor", "Student"), each = 3, times = 2),
+  Feature = rep(c("Syntactic", "Lexical", "Semantic"), times = 4),
+  Value = c(0.119,	0.015,	0.216,	0.122,	0.0159,	0.219, 0.146,	0.0444,	0.266,	0.156,	0.0547,	0.281),
+  Lower_Bound = c(0.112,	0.0135,	0.206,	0.114,	0.0137,	0.208, 0.138,	0.0429,	0.255,	0.148,	0.0525,	0.27),
+  Upper_Bound = c(0.127,	0.0164,	0.227,	0.13,	0.018,	0.229, 0.154,	0.0458,	0.276,	0.164,	0.0568,	0.291),
+  star = c("Y", "Y", "Y", "Y", "Y", "Y",
+           "Y", "Y", "Y", "Y", "Y", "Y")
+)
+
+
+
+# Plot
+ggplot(data, aes(x = Feature, y = Value, fill = Condition, shape = star)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8), width = 0.7) +
+  geom_errorbar(aes(ymin = Lower_Bound, ymax = Upper_Bound),
+                position = position_dodge(width = 0.8), width = 0.2) +
+  geom_point(data = data %>% filter(star == "Y"), aes(y = Value + .03), shape=8,
+             position = position_dodge(.8),
+             show.legend = FALSE) +
+  theme_minimal() +
+  theme(legend.position = c(.92, 0.85),
+        legend.box.background = element_rect(color="white", size=2),
+        plot.title = element_text(hjust = 0.5)) +
+  facet_wrap(~Speaker) +
+  # theme_minimal() +
+  labs(title = "Comparison of Features Between Actual and Baseline", ) +
+  scale_fill_manual(values = c( rgb(1, 0, 0, alpha=0.5), rgb(0, 0, 1, alpha=0.5)))
+
+alignment_comparison_both.melt$outcomes <- "with_outcomes"
+alignment_comparison_no_out.melt$outcomes <- "no_outcomes"
+
+combined_out_no_out <- rbind(subset(alignment_comparison_both.melt, condition == "gold"), subset(alignment_comparison_no_out.melt, condition == "gold"))
+
+daty <- subset(combined_out_no_out, speaker_order == "tutor>student")
+
+
+m1 <- lmer(syntax_penn_tok2 ~ outcomes + (1 | tutor), data = subset(combined_out_no_out, speaker_order == "tutor>student"))
+
+m2 <- lmer(lexical_lem2 ~ outcomes + (1 | tutor), data = subset(combined_out_no_out, speaker_order == "tutor>student"))
+
+m3 <- lmer(cosine_semanticL ~ outcomes + (1 | tutor), data = subset(combined_out_no_out, speaker_order == "tutor>student"))
+
+# tab_model(m1, m2, m3, show.std = TRUE)
+
+m1 <- lmer(syntax_penn_tok2 ~ outcomes + (1 | tutor), data = subset(combined_out_no_out, speaker_order == "student>tutor"))
+
+m2 <- lmer(lexical_lem2 ~ outcomes + (1 | tutor), data = subset(combined_out_no_out, speaker_order == "student>tutor"))
+
+m3 <- lmer(cosine_semanticL ~ outcomes + (1 | tutor), data = subset(combined_out_no_out, speaker_order == "student>tutor"))
+
+# tab_model(m1, m2, m3, show.std = TRUE)
+#
+# emmeans(m1, pairwise~outcomes)
+#
+# emmeans(m2, pairwise~outcomes)
+#
+# emmeans(m3, pairwise~outcomes)
+
+
+# alignment_comparison_human.melt <- alignment_comparison_both.melt
+
+# alignment_comparison_human.melt$outcomes <- "human"
+# alignment_comparison_both.melt$outcomes <- "ASR"
+#
+# combined_out_no_out <- rbind(subset(alignment_comparison_both.melt, condition == "gold"), subset(alignment_comparison_human.melt, condition == "gold"))
+#
+# m1 <- lmer(syntax_penn_tok2 ~ outcomes + (1 | tutor), data = subset(combined_out_no_out, speaker_order == "tutor>student"))
+#
+# m2 <- lmer(lexical_lem2 ~ outcomes + (1 | tutor), data = subset(combined_out_no_out, speaker_order == "tutor>student"))
+#
+# m3 <- lmer(cosine_semanticL ~ outcomes + (1 | tutor), data = subset(combined_out_no_out, speaker_order == "tutor>student"))
+#
+# tab_model(m1, m2, m3, show.std = TRUE)
+#
+# emmeans(m1, pairwise~outcomes)
+# # summary(m2_tutor)
+# emmeans(m2, pairwise~outcomes)
+# # summary(m3_tutor)
+# emmeans(m3, pairwise~outcomes)
+#
+#
+# m1 <- lmer(syntax_penn_tok2 ~ outcomes + (1 | tutor), data = subset(combined_out_no_out, speaker_order == "student>tutor"))
+#
+# m2 <- lmer(lexical_lem2 ~ outcomes + (1 | tutor), data = subset(combined_out_no_out, speaker_order == "student>tutor"))
+#
+# m3 <- lmer(cosine_semanticL ~ outcomes + (1 | tutor), data = subset(combined_out_no_out, speaker_order == "student>tutor"))
+#
+# tab_model(m1, m2, m3, show.std = TRUE)
+#
+# emmeans(m1, pairwise~outcomes)
+#
+# # summary(m2_tutor)
+# emmeans(m2, pairwise~outcomes)
+#
+# # summary(m3_tutor)
+# emmeans(m3, pairwise~outcomes)
+
+
+data <- data.frame(
+  Condition = rep(c("ASR", "Human"), each = 6),
+  Speaker = rep(c("Tutor", "Student"), each = 3, times = 2),
+  Feature = rep(c("Syntactic", "Lexical", "Semantic"), times = 4),
+  Value = c(0.147,	0.0443,	0.266,	0.157,	0.0542,	0.281, 0.137,	0.0414,	0.428,	0.156,	0.065,	0.454),
+  Lower_Bound = c(0.139,	0.0411,	0.255,	0.149,	0.0502,	0.269,
+                  0.127,	0.0371,	0.414,	0.146,	0.0597,	0.439),
+  Upper_Bound = c(0.155,	0.0474,	0.278,	0.165,	0.0583,	0.293, 0.147,	0.0457,	0.443,	0.167,	0.0704,	0.469),
+  star = c("", "", "Y", "", "Y", "Y",
+           "", "", "Y", "", "Y", "Y")
+)
+
+
+
+# Plot
+ggplot(data, aes(x = Feature, y = Value, fill = Condition, shape = star)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8), width = 0.7) +
+  geom_errorbar(aes(ymin = Lower_Bound, ymax = Upper_Bound),
+                position = position_dodge(width = 0.8), width = 0.2) +
+  geom_point(data = data %>% filter(star == "Y"), aes(y = Value + .03), shape=8,
+             position = position_dodge(.8),
+             show.legend = FALSE) +
+  theme_minimal() +
+  theme(legend.position = c(.92, 0.85),
+        legend.box.background = element_rect(color="white", size=2),
+        plot.title = element_text(hjust = 0.5)) +
+  facet_wrap(~Speaker) +
+  # theme_minimal() +
+  labs(title = "Comparison of Features Between Human and ASR Transcripts", ) +
+  scale_fill_manual(values = c( rgb(1, 0, 0, alpha=0.5), rgb(0, 0, 1, alpha=0.5)))
+
+
+m4 <- lmer(syntax_penn_tok2 ~ speaker_order + (1 | tutor), data = subset(alignment_comparison_both.melt, condition == "gold"))
+
+m5 <- lmer(lexical_lem2 ~ speaker_order + (1 | tutor), data = subset(alignment_comparison_both.melt, condition == "gold"))
+
+m6 <- lmer(cosine_semanticL ~ speaker_order + (1 | tutor), data = subset(alignment_comparison_both.melt, condition == "gold"))
+
+# tab_model(m4, m5, m6, show.std = TRUE)
+#
+# emmeans(m4, pairwise~speaker_order)
+#
+# emmeans(m5, pairwise~speaker_order)
+#
+# emmeans(m6, pairwise~speaker_order)
+
+data <- data.frame(
+  Condition = rep(c("Student", "Tutor"), each = 3),
+  Feature = rep(c("Syntactic", "Lexical", "Semantic"), times = 4),
+  Value = c(0.157,	0.0554,	0.281, 0.147,	0.0455,	0.265),
+    Lower_Bound = c(0.149,	0.0516,	0.27, 0.139, 0.0418,	0.255),
+  Upper_Bound = c(0.165,	0.0591,	0.291, 0.156,	0.049,	0.276),
+  star = c("Y", "Y", "Y", "Y", "Y", "Y")
+)
+
+
+
+# Plot
+ggplot(data, aes(x = Feature, y = Value, fill = Condition, shape = star)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8), width = 0.7) +
+  geom_errorbar(aes(ymin = Lower_Bound, ymax = Upper_Bound),
+                position = position_dodge(width = 0.8), width = 0.2) +
+  geom_point(aes(y = Value + .03), shape=8,
+             position = position_dodge(.8),
+             show.legend = FALSE) +
+  theme_minimal() +
+  labs(title = "Comparison of Features between Tutor and Student",
+       x = "Feature", y = "Value") +
+  scale_fill_manual(values = c(rgb(1, 0, 0, alpha=0.3), rgb(0, 0, 1, alpha=0.3)))
+
+
+hist(alignment_students_gold$syntax_penn_tok2, col=rgb(0, 0, 1, alpha=0.5), breaks = 40, main="Syntactic Alignment", xlab = "Bigram Tokenized Syntactic Alignment", xlim = c(0,.8), ylim = c(0,2000))
+hist(alignment_tutors_gold$syntax_penn_tok2, col=rgb(1, 0, 0, alpha=0.5),  breaks = 40,add=TRUE)
+hist(alignment_comparison_student_student$syntax_penn_tok2_gold, col=rgb(0, 1, 0, alpha=0.5),  breaks = 40,add=TRUE)
+legend("topright", legend=c("Tutor to Student", "Student to Tutor", "Student to Student"), fill=c(rgb(1, 0, 0, alpha=0.5), rgb(0, 0, 1, alpha=0.5), rgb(0, 1, 0, alpha=0.5)))
+
+hist(alignment_students_gold$lexical_lem2, col=rgb(0, 0, 1, alpha=0.5),breaks = 40, main="Lexical Alignment", xlab = "Bigram Lemmatized Lexical Alignment", xlim = c(0,.6), ylim = c(0,3000))
+hist(alignment_tutors_gold$lexical_lem2, col=rgb(1, 0, 0, alpha=0.5), breaks = 40, add=TRUE)
+hist(alignment_comparison_student_student$lexical_lem2_gold, col=rgb(0, 1, 0, alpha=0.5), breaks = 40, add=TRUE)
+legend("topright", legend=c("Tutor to Student", "Student to Tutor", "Student to Student"), fill=c(rgb(1, 0, 0, alpha=0.5), rgb(0, 0, 1, alpha=0.5), rgb(0, 1, 0, alpha=0.5)))
+
+
+hist(alignment_students_gold$cosine_semanticL, col=rgb(0, 0, 1, alpha=0.5), breaks = 50,main="Semantic Alignment", xlab = "Semantic Alignment", xlim = c(-.1,1), ylim = c(0,850))
+hist(alignment_tutors_gold$cosine_semanticL, col=rgb(1, 0, 0, alpha=0.5), breaks = 50,  add=TRUE)
+hist(alignment_comparison_student_student$cosine_semanticL_gold, col=rgb(0, 1, 0, alpha=0.5), breaks = 50,  add=TRUE)
+legend("topright", legend=c("Tutor to Student", "Student to Tutor", "Student to Student"), fill=c(rgb(1, 0, 0, alpha=0.5), rgb(0, 0, 1, alpha=0.5), rgb(0, 1, 0, alpha=0.5)))
+
+
+

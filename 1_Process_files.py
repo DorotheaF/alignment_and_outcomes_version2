@@ -76,7 +76,7 @@ def seperate_by_snippet(location, split_file):
     dataframe['speaker_type'] = dataframe['speaker_tagged_role'].astype(str)
     dataframe['speaker_ID'] = dataframe['speaker_ID'].astype(str)
     dataframe['participant'] = dataframe[['speaker_tagged_role', 'speaker_ID']].agg('_'.join, axis=1)
-    dataframe['participant'] = dataframe['participant'].apply(lambda x: x if "tutor" in x else "student" if "student" in x else "other")
+    # dataframe['participant'] = dataframe['participant'].apply(lambda x: x if "tutor" in x else "student" if "student" in x else "other")
     dataframe = dataframe.rename(columns={'utterance': "content"})
     grouped = dataframe.groupby('session_ID')
 
@@ -102,7 +102,7 @@ def seperate_by_snippet(location, split_file):
                                            run_spell_check=False, input_as_directory=True, minwords=1)
 
     files = glob.glob(location + "processed/*.txt")
-    chunks = [files[x:x + 10000] for x in range(0, len(files), 10000)]
+    chunks = [files[x:x + 1000] for x in range(0, len(files), 1000)]
     for index, chunk in enumerate(chunks):
         print(index)
         save_path = location + "processed/" + str(index)
@@ -116,7 +116,7 @@ def seperate_by_snippet(location, split_file):
                                            output_file_directory=location + "baseline_processed/",
                                            run_spell_check=False, input_as_directory=True, minwords=1)
     files = glob.glob(location + "baseline_processed/*.txt")
-    chunks = [files[x:x + 10000] for x in range(0, len(files), 10000)]
+    chunks = [files[x:x + 1000] for x in range(0, len(files), 1000)]
     for index, chunk in enumerate(chunks):
         print(index)
         save_path = location + "baseline_processed/" + str(index)
