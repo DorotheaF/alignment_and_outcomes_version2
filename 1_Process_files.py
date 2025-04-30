@@ -178,10 +178,11 @@ def from_raw(location, raw_filename):
 
     dataframe.to_csv(location + 'raw/full_data_processed_once.csv', index=False)
 
-location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/"
-raw_filename = "HAT Session Utterances - Sample Export for Review.xlsx"
+# location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/"
+location = "/projects/dofr2963/align_out_2/data/ASR_full/"
+raw_filename = "hat-utterances_2023-08-01-to-2024-06-11.csv"
 
-# from_raw(location, raw_filename)
-# tag_others(location)
+from_raw(location, raw_filename)
+tag_others(location)
 seperate_by_snippet(location, False)
 
