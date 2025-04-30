@@ -152,8 +152,8 @@ def tag_others(location):
 
 def from_raw(location, raw_filename):
     pd.set_option('display.max_columns', None)
-    dataframe = pd.read_excel(location + "raw/" + raw_filename)
-    # dataframe = pd.read_csv(location + 'raw/' + raw_filename)
+    # dataframe = pd.read_excel(location + "raw/" + raw_filename)
+    dataframe = pd.read_csv(location + 'raw/' + raw_filename)
     print(dataframe.columns)
 
     dataframe = dataframe[['tutor_ID', 'speaker_ID', 'speaker_type', 'start_time', 'end_time', 'utterance', 'asr_confidence', 'session_ID', 'session_date', 'session_time']]
