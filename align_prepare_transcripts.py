@@ -16,9 +16,9 @@ from nltk.corpus import wordnet as wn
 from nltk.tag.stanford import StanfordPOSTagger
 from nltk.util import ngrams
 
-import gensim
-from gensim.models import word2vec
-
+# import gensim
+# from gensim.models import word2vec
+#
 
 def InitialCleanup(dataframe,
                    minwords=2,
