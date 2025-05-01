@@ -163,9 +163,13 @@ def from_raw(location, raw_filename):
     repeats = []
 
     # #clean ASR
+    print(len(dataframe))
     for i in range(1, len(dataframe)):
         if (dataframe.loc[i].utterance == dataframe.loc[i - 1].utterance) and (dataframe.loc[i].speaker_ID == dataframe.loc[i - 1].speaker_ID):
             repeats = repeats + [i]
+        if (i%10000) == 0:
+            print(i)
+
 
     print(repeats)
     #

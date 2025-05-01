@@ -1,9 +1,9 @@
 import os
-
+import sys
 from align_test.alignment import LinguisticAlignment
 
 
-def calculate_alignment(location):
+def calculate_alignment(location, token):
     folders_gold = [x[0] for x in os.walk(location + "processed/")]
     folders_baseline =  [x[0] for x in os.walk(location + "baseline_processed/")]
     print(len(folders_gold))
@@ -13,7 +13,7 @@ def calculate_alignment(location):
 
     # Initialize the analyzer
     analyzer = LinguisticAlignment(alignment_types=["bert", "lexsyn"], #"fasttext",
-                                   )
+                                   token = token)
 
     for folder in folders_gold[1:len(folders_gold)]:
         print("this is folder: " + folder)
@@ -46,6 +46,11 @@ def calculate_alignment(location):
 
 
 
-location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/"
+# location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/"
+location = "/projects/dofr2963/align_out_2/data/ASR_full/"
 
-calculate_alignment(location)
+token = sys.argv[sys.argv.index("--token") + 1]
+print("token found")
+
+
+calculate_alignment(location, token)
