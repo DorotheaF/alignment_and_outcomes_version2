@@ -187,7 +187,7 @@ def from_raw(location, raw_filename):
 location = "/projects/dofr2963/align_out_2/data/ASR_full/"
 raw_filename = "hat-utterances_2023-08-01-to-2024-06-11.csv"
 
-from_raw(location, raw_filename)
+# from_raw(location, raw_filename)
 tag_others(location)
 seperate_by_snippet(location, False)
 

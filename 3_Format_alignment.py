@@ -47,17 +47,14 @@ def consolidate_files(location):
                                    "participant": "prev_speaker"}, inplace=True)
     print(mega_dataframe.columns)
     mega_dataframe = mega_dataframe[["condition_info", "time", "speaker", "prev_speaker", "content", "previous_utterance", "utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "fasttext_semantic", "tutor_id", "date", "session_time"]]
-    mega_dataframe.to_csv(location + "merged_transcript.csv", index= False)
+    mega_dataframe.to_csv(location + "merged_all_alignment.csv", index= False)
     print("saved to merged")
 
 
-        # seperate out time & date
-        # split by snippet
-        # fix tutor/student labeling
 
 
 def sum_by_student_and_tutor(location):
-    alignment_full = pd.read_csv( location +  '/merged_transcript.csv')
+    alignment_full = pd.read_csv( location +  '/merged_all_alignment.csv')
 
     partner_pair_list = [["student", "tutor"]]
     for duo in partner_pair_list:
@@ -83,6 +80,7 @@ def sum_by_student_and_tutor(location):
             for pair, group in group_by_pair:
                 row_sum = group.sum(numeric_only=True)/len(group)
                 row_sum['partner_pair'] = pair
+                row_sum['num_utt'] = len(group)
                 summed_rows.append(row_sum)
 
             summed_by_student_to_tutor = pd.concat(summed_rows)
