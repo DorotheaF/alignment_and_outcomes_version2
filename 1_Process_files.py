@@ -172,14 +172,15 @@ def from_raw(location, raw_filename):
 
 
     print(repeats)
-    #
+    print("dropping")
     dataframe.drop(repeats, inplace=True)
-    dataframe.reset_index(drop=True, inplace=True)
+    # dataframe.reset_index(drop=True, inplace=True)
     print(dataframe.head(15).to_excel(location + 'raw/data_head_for_review.xlsx'))
     print(len(dataframe))
     print(len(set(dataframe['session_ID'])))
     print(len(set(dataframe['tutor_ID'])))
 
+    print("saving")
     dataframe.to_csv(location + 'raw/full_data_processed_once.csv', index=False)
 
 # location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/"
