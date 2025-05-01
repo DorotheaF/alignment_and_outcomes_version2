@@ -64,8 +64,11 @@ def create_baseline(dataframe_source, file_path, name, split_file):
                                ignore_index=True)
                 to_concat.append(df)
             index += 1
-        dataframe = pd.concat(to_concat)
-        dataframe.to_csv(file_path + name + '-' + str(index) + '.txt', sep='\t', index=False)
+        try:
+            dataframe = pd.concat(to_concat)
+            dataframe.to_csv(file_path + name + '-' + str(index) + '.txt', sep='\t', index=False)
+        except:
+            x=0
 
 def seperate_by_snippet(location, split_file):
     isExist = os.path.exists(location + "/convos_by_tutor/")
