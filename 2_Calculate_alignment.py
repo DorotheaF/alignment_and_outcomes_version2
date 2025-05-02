@@ -50,7 +50,7 @@ def calculate_alignment(location, token, start_folder, end_folder):
 
 
 # location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/"
-location = "/projects/dofr2963/align_out_2/data/ASR_sample/"
+location = "/projects/dofr2963/align_out_2/data/ASR_full/"
 
 token = sys.argv[sys.argv.index("--token") + 1]
 print("token found")
