@@ -10,8 +10,8 @@ def calculate_alignment(location, token, start_folder, end_folder):
     print(len(folders_baseline))
     print("before loop")
     i = 0
-    print("going from folder: " + folders_gold[start_folder+1])
-    print("to folder: " + folders_gold[end_folder+1])
+    print("going from folder: " + str(folders_gold[start_folder+1]))
+    print("to folder: " + str(folders_gold[end_folder+1]))
 
     # Initialize the analyzer
     analyzer = LinguisticAlignment(alignment_types=["bert", "lexsyn"], #"fasttext",
