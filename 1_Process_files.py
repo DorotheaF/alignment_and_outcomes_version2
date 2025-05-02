@@ -105,8 +105,8 @@ def seperate_by_snippet(location, split_file):
         name = tutor_id + ")(" + date.replace("/", "-") + ")(" + time.replace(":", "-") + ")(" + sesh_id
         print(name)
 
-        seperate_by_timing(group, location + "convos_by_tutor/", name, split_file)
-        create_baseline(group, location + "baseline/", name, split_file)
+        # seperate_by_timing(group, location + "convos_by_tutor/", name, split_file)
+        # create_baseline(group, location + "baseline/", name, split_file)
 
     prepped_df = align_prepare_transcripts.prepare_transcripts(input_files=location+"convos_by_tutor/", output_file_directory=location+ "processed/",
                                            run_spell_check=False, input_as_directory=True, minwords=1)

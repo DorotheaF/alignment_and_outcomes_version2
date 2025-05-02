@@ -11,8 +11,8 @@ def consolidate_files(location):
     i = 0
     dataframes = []
     for folder in folders[1:len(folders)]:
-        # folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups-sd3-n1.csv')
-        folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups.csv')
+        folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups-sd3-n1.csv')
+        # folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups.csv')
         bert_frame = pd.read_csv(folder+'/bert/semantic_alignment_bert-base-uncased_lag1.csv')
         folder_frame['bert_semantic'] = bert_frame['bert-base-uncased_cosine_similarity']
         folder_frame[['tutor_id', 'date', 'session_time', 'condition_info']] = folder_frame['source_file'].str.split(r'\)\(', expand=True, n=3)
@@ -57,7 +57,7 @@ def consolidate_files(location):
 
 
 
-def sum_by_student_and_tutor(location):
+def sum_by_student_and_tutor(location, level="none"):
     alignment_full = pd.read_csv( location +  '/merged_all_alignment.csv')
 
     partner_pair_list = [["student", "tutor"]]
@@ -72,6 +72,11 @@ def sum_by_student_and_tutor(location):
             alignment = alignment[alignment['prev_speaker'].str.contains(prev_speaker + '.*')]
             alignment.reset_index(drop=True, inplace=True)
             alignment['partner_pair'] =  alignment[['speaker', 'prev_speaker']].agg('>'.join, axis=1)
+            if level == "snippet":
+                alignment['partner_pair'] = alignment[['partner_pair', 'condition_info']].agg('>'.join, axis=1)
+            elif level == "transcript":
+                alignment['partner_pair'] = alignment[['partner_pair', 'condition_info']].agg('>'.join, axis=1)
+                alignment['partner_pair'] = alignment['partner_pair'].apply(lambda x: x.rsplit("_",1)[0])
 
             alignment = alignment[["partner_pair", "utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic",  "tutor_id"]] #"fasttext_semantic",
             print(alignment.columns)
@@ -87,13 +92,24 @@ def sum_by_student_and_tutor(location):
                 row_sum['num_utt'] = len(group)
                 summed_rows.append(row_sum)
 
-            summed_by_student_to_tutor = pd.concat(summed_rows)
+            print(summed_rows)
+            summed_by_student_to_tutor = pd.concat(summed_rows, axis=1).T
             # summed_by_student_to_tutor.set_index('partner_pair', inplace=True)
-            summed_by_student_to_tutor.to_excel(location + '/alignment_summed_by_' + speaker  + '_to_' + prev_speaker +'_no_outcomes.xlsx')
+            # summed_by_student_to_tutor = pd.DataFrame(summed_by_student_to_tutor)
+            filename = location + '/alignment_summed_by_' + speaker  + '_to_' + prev_speaker +'_no_outcomes.xlsx'
+            if level == "snippet":
+                filename = filename.replace('.xlsx', '_snippet.xlsx')
+            elif level == "transcript":
+                filename = filename.replace('.xlsx', '_transcript.xlsx')
+
+            summed_by_student_to_tutor.to_excel(filename)
             print("saved " + speaker + '_to_' + prev_speaker)
 
 
-# location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/by_tutor_metrics/"
-location = "/projects/dofr2963/align_out_2/data/ASR_sample/by_tutor_metrics/"
+
+location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/by_tutor_metrics/"
+# location = "/projects/dofr2963/align_out_2/data/ASR_sample/by_tutor_metrics/"
 consolidate_files(location)
 sum_by_student_and_tutor(location)
+sum_by_student_and_tutor(location, "snippet")
+sum_by_student_and_tutor(location, "transcript")
