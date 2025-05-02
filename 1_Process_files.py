@@ -112,7 +112,7 @@ def seperate_by_snippet(location, split_file):
                                            run_spell_check=False, input_as_directory=True, minwords=1)
 
     files = glob.glob(location + "processed/*.txt")
-    chunks = [files[x:x + 1000] for x in range(0, len(files), 1000)]
+    chunks = [files[x:x + 100] for x in range(0, len(files), 100)]
     for index, chunk in enumerate(chunks):
         print(index)
         save_path = location + "processed/" + str(index)
@@ -126,7 +126,7 @@ def seperate_by_snippet(location, split_file):
                                            output_file_directory=location + "baseline_processed/",
                                            run_spell_check=False, input_as_directory=True, minwords=1)
     files = glob.glob(location + "baseline_processed/*.txt")
-    chunks = [files[x:x + 1000] for x in range(0, len(files), 1000)]
+    chunks = [files[x:x + 100] for x in range(0, len(files), 100)]
     for index, chunk in enumerate(chunks):
         print(index)
         save_path = location + "baseline_processed/" + str(index)
@@ -163,8 +163,8 @@ def tag_others(location):
 def from_raw(location, raw_filename):
     pd.set_option('display.max_columns', None)
 
-    dataframe = pd.read_excel(location + "raw/" + raw_filename)
-    # dataframe = pd.read_csv(location + 'raw/' + raw_filename)
+    # dataframe = pd.read_excel(location + "raw/" + raw_filename)
+    dataframe = pd.read_csv(location + 'raw/' + raw_filename)
     print(dataframe.columns)
 
     dataframe = dataframe[['tutor_ID', 'speaker_ID', 'speaker_type', 'start_time', 'end_time', 'utterance', 'asr_confidence', 'session_ID', 'session_date', 'session_time']]
@@ -195,14 +195,14 @@ def from_raw(location, raw_filename):
     dataframe.to_csv(location + 'raw/full_data_processed_once.csv', index=False)
 
 # location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/"
-# location = "/projects/dofr2963/align_out_2/data/ASR_full/"
-# raw_filename = "hat-utterances_2023-08-01-to-2024-06-11.csv"
-location = "/projects/dofr2963/align_out_2/data/ASR_sample/"
-raw_filename = "HAT Session Utterances - Sample Export for Review.xlsx"
-print("loading from " + location + raw_filename)
-from_raw(location, raw_filename)
-print("tagging others")
-tag_others(location)
+location = "/projects/dofr2963/align_out_2/data/ASR_full/"
+raw_filename = "hat-utterances_2023-08-01-to-2024-06-11.csv"
+# location = "/projects/dofr2963/align_out_2/data/ASR_sample/"
+# raw_filename = "HAT Session Utterances - Sample Export for Review.xlsx"
+# print("loading from " + location + raw_filename)
+# from_raw(location, raw_filename)
+# print("tagging others")
+# tag_others(location)
 print("delineating by snippet")
 seperate_by_snippet(location, False)
 
