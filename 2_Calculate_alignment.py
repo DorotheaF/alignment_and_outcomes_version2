@@ -54,8 +54,8 @@ location = "/projects/dofr2963/align_out_2/data/ASR_sample/"
 
 token = sys.argv[sys.argv.index("--token") + 1]
 print("token found")
-start_folder = sys.argv[sys.argv.index("--start") + 1]
-end_folder = sys.argv[sys.argv.index("--end") + 1]
+start_folder = int(sys.argv[sys.argv.index("--start") + 1])
+end_folder = int(sys.argv[sys.argv.index("--end") + 1])
 
 
 calculate_alignment(location, token, start_folder, end_folder)
