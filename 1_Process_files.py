@@ -4,6 +4,10 @@ import os
 import numpy as np
 import pandas as pd
 import align_prepare_transcripts
+
+import nltk
+nltk.download('punkt_tab')
+
 def seperate_by_timing(dataframe_source, file_path, name, split_file):
     dataframe = dataframe_source.copy()
     # print(len(dataframe))
