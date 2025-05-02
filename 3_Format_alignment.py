@@ -90,6 +90,7 @@ def sum_by_student_and_tutor(location):
             summed_by_student_to_tutor = pd.concat(summed_rows)
             # summed_by_student_to_tutor.set_index('partner_pair', inplace=True)
             summed_by_student_to_tutor.to_excel(location + '/alignment_summed_by_' + speaker  + '_to_' + prev_speaker +'_no_outcomes.xlsx')
+            print("saved " + speaker + '_to_' + prev_speaker)
 
 
 # location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/by_tutor_metrics/"
