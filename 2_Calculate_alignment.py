@@ -12,7 +12,7 @@ def calculate_alignment(location, token, start_folder, end_folder):
     i = 0
     print("Start and end folders:")
     print(folders_gold[start_folder+1])
-    print(folders_gold[end_folder])
+    print(folders_gold[end_folder+1])
 
     # Initialize the analyzer
     analyzer = LinguisticAlignment(alignment_types=["bert", "lexsyn"], #"fasttext",
