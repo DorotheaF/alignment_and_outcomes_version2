@@ -194,7 +194,8 @@ location = "/projects/dofr2963/align_out_2/data/ASR_full/"
 raw_filename = "hat-utterances_2023-08-01-to-2024-06-11.csv"
 
 # from_raw(location, raw_filename)
-print("tagging others")
-tag_others(location)
+# print("tagging others")
+# tag_others(location)
+print("by_snippet")
 seperate_by_snippet(location, False)
 
