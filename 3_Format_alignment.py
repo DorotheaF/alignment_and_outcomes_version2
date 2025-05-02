@@ -11,7 +11,8 @@ def consolidate_files(location):
     i = 0
     dataframes = []
     for folder in folders[1:len(folders)]:
-        folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups-sd3-n1.csv')
+        # folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups-sd3-n1.csv')
+        folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups.csv')
         folder_frame[['tutor_id', 'date', 'session_time', 'condition_info']] = folder_frame['source_file'].str.split(r'\)\(', expand=True, n=3)
         folder_frame['condition_info'] = folder_frame['condition_info'].apply(lambda x: x.rsplit("-",1)[0])
         transcript_df_groups = folder_frame.groupby('condition_info')
