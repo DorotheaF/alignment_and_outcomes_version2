@@ -88,6 +88,7 @@ def sum_by_student_and_tutor(location):
             summed_by_student_to_tutor.to_excel(location + '/alignment_summed_by_' + speaker  + '_to_' + prev_speaker +'_no_outcomes.xlsx')
 
 
-location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/by_tutor_metrics/"
+# location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/by_tutor_metrics/"
+location = "/projects/dofr2963/align_out_2/data/ASR_sample/"
 consolidate_files(location)
 sum_by_student_and_tutor(location)
