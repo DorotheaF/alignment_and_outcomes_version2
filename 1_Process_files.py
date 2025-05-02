@@ -163,8 +163,8 @@ def tag_others(location):
 def from_raw(location, raw_filename):
     pd.set_option('display.max_columns', None)
 
-    dataframe = pd.read_excel(location + "raw/" + raw_filename)
-    # dataframe = pd.read_csv(location + 'raw/' + raw_filename)
+    # dataframe = pd.read_excel(location + "raw/" + raw_filename)
+    dataframe = pd.read_csv(location + 'raw/' + raw_filename)
     print(dataframe.columns)
 
     dataframe = dataframe[['tutor_ID', 'speaker_ID', 'speaker_type', 'start_time', 'end_time', 'utterance', 'asr_confidence', 'session_ID', 'session_date', 'session_time']]
@@ -199,10 +199,10 @@ def from_raw(location, raw_filename):
 # raw_filename = "hat-utterances_2023-08-01-to-2024-06-11.csv"
 location = "/projects/dofr2963/align_out_2/data/ASR_sample/"
 raw_filename = "HAT Session Utterances - Sample Export for Review.xlsx"
-print("loading from " + location + raw_filename)
-from_raw(location, raw_filename)
-print("tagging others")
-tag_others(location)
-print("by_snippet")
+# print("loading from " + location + raw_filename)
+# from_raw(location, raw_filename)
+# print("tagging others")
+# tag_others(location)
+print("delineating by snippet")
 seperate_by_snippet(location, False)
 
