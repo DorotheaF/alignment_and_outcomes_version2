@@ -162,6 +162,7 @@ def tag_others(location):
 
 def from_raw(location, raw_filename):
     pd.set_option('display.max_columns', None)
+
     dataframe = pd.read_excel(location + "raw/" + raw_filename)
     # dataframe = pd.read_csv(location + 'raw/' + raw_filename)
     print(dataframe.columns)
