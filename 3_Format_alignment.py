@@ -13,6 +13,8 @@ def consolidate_files(location):
     for folder in folders[1:len(folders)]:
         # folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups-sd3-n1.csv')
         folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups.csv')
+        bert_frame = pd.read_csv(folder+'/bert/semantic_alignment_bert-base-uncased_lag1.csv')
+        folder_frame['bert_semantic'] = bert_frame['bert-base-uncased_cosine_similarity']
         folder_frame[['tutor_id', 'date', 'session_time', 'condition_info']] = folder_frame['source_file'].str.split(r'\)\(', expand=True, n=3)
         folder_frame['condition_info'] = folder_frame['condition_info'].apply(lambda x: x.rsplit("-",1)[0])
         transcript_df_groups = folder_frame.groupby('condition_info')
@@ -39,15 +41,16 @@ def consolidate_files(location):
             dataframes.append(reset_transcript)
 
     mega_dataframe = pd.concat(dataframes)
-    mega_dataframe.rename(columns={'BERT_BERT-BASE-UNCASED_COSINE_SIMILARITY': 'bert_semantic',
-                                   'lemma_fasttext-wiki-news-300_cosine_similarity': 'fasttext_semantic',
+    mega_dataframe.rename(columns={
+                                   # 'BERT_BERT-BASE-UNCASED_COSINE_SIMILARITY': 'bert_semantic',
+                                   # 'lemma_fasttext-wiki-news-300_cosine_similarity': 'fasttext_semantic',
                                    'pos_tok2_cosine': 'syntax','lexical_lem1_cosine': 'lexical',
                                    'lexical_lem2_cosine': 'lexical_bigram',
                                    "content": "previous_utterance",
                                    "content2": "content",
                                    "participant": "prev_speaker"}, inplace=True)
     print(mega_dataframe.columns)
-    mega_dataframe = mega_dataframe[["condition_info", "time", "speaker", "prev_speaker", "content", "previous_utterance", "utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "fasttext_semantic", "tutor_id", "date", "session_time"]]
+    mega_dataframe = mega_dataframe[["condition_info", "time", "speaker", "prev_speaker", "content", "previous_utterance", "utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic",  "tutor_id", "date", "session_time"]] #"fasttext_semantic",
     mega_dataframe.to_csv(location + "merged_all_alignment.csv", index= False)
     print("saved to merged")
 
@@ -70,11 +73,11 @@ def sum_by_student_and_tutor(location):
             alignment.reset_index(drop=True, inplace=True)
             alignment['partner_pair'] =  alignment[['speaker', 'prev_speaker']].agg('>'.join, axis=1)
 
-            alignment = alignment[["partner_pair", "utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "fasttext_semantic", "tutor_id"]]
+            alignment = alignment[["partner_pair", "utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic",  "tutor_id"]] #"fasttext_semantic",
             print(alignment.columns)
 
-            alignment[["utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "fasttext_semantic", "tutor_id"]] = alignment[
-                ["utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "fasttext_semantic", "tutor_id"]].apply(pd.to_numeric)
+            alignment[["utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "tutor_id"]] = alignment[  #"fasttext_semantic",
+                ["utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "tutor_id"]].apply(pd.to_numeric)  #"fasttext_semantic",
 
             summed_rows = []
             group_by_pair = alignment.groupby('partner_pair')
