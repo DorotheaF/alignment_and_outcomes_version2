@@ -106,21 +106,21 @@ def seperate_by_snippet(location, split_file):
         print(name)
 
         # seperate_by_timing(group, location + "convos_by_tutor/", name, split_file)
-        # create_baseline(group, location + "baseline/", name, split_file)
+        create_baseline(group, location + "baseline/", name, split_file)
 
-    prepped_df = align_prepare_transcripts.prepare_transcripts(input_files=location+"convos_by_tutor/", output_file_directory=location+ "processed/",
-                                           run_spell_check=False, input_as_directory=True, minwords=1)
+    # prepped_df = align_prepare_transcripts.prepare_transcripts(input_files=location+"convos_by_tutor/", output_file_directory=location+ "processed/",
+    #                                        run_spell_check=False, input_as_directory=True, minwords=1)
 
-    files = glob.glob(location + "processed/*.txt")
-    chunks = [files[x:x + 100] for x in range(0, len(files), 100)]
-    for index, chunk in enumerate(chunks):
-        print(index)
-        save_path = location + "processed/" + str(index)
-        isExist = os.path.exists(save_path)
-        if not isExist:
-            os.makedirs(save_path)
-        for file in chunk:
-            os.rename(file, file.replace('processed', 'processed/' + str(index)))
+    # files = glob.glob(location + "processed/*.txt")
+    # chunks = [files[x:x + 100] for x in range(0, len(files), 100)]
+    # for index, chunk in enumerate(chunks):
+    #     print(index)
+    #     save_path = location + "processed/" + str(index)
+    #     isExist = os.path.exists(save_path)
+    #     if not isExist:
+    #         os.makedirs(save_path)
+    #     for file in chunk:
+    #         os.rename(file, file.replace('processed', 'processed/' + str(index)))
 
     prepped_df = align_prepare_transcripts.prepare_transcripts(input_files=location + "baseline/",
                                            output_file_directory=location + "baseline_processed/",
