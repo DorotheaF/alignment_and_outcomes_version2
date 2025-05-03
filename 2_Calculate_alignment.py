@@ -20,28 +20,30 @@ def calculate_alignment(location, token, start_folder, end_folder):
 
     for folder in folders_gold[start_folder+1:end_folder+2]:
         print("this is folder: " + folder)
-        print("FOLDER NUMBER " + str(i))
+        folder_num = folder.rsplit("/",1)[1]
+        print("FOLDER NUMBER " + str(folder_num) + " list num " + str(i))
         print("here")
         print(folder)
-        os.makedirs(location + '/by_tutor_metrics/' + str(i))
+        os.makedirs(location + '/by_tutor_metrics/' + str(folder_num))
 
         results = analyzer.analyze_folder(
             folder_path=folder,
-            output_directory=location + "by_tutor_metrics/"+ str(i),
+            output_directory=location + "by_tutor_metrics/"+ str(folder_num),
             lag=1  # Number of turns to lag (default: 1),
         )
         i += 1
     i = 0
     for folder in folders_baseline[start_folder+1:end_folder+2]:
         print("this is baseline folder: " + folder)
-        print("FOLDER NUMBER " + str(i))
+        folder_num = folder.rsplit("/",1)[1]
+        print("FOLDER NUMBER " + str(folder_num) + " list num " + str(i))
         print("here")
         print(folder)
-        os.makedirs(location + '/by_tutor_metrics_baseline/' + str(i))
+        os.makedirs(location + '/by_tutor_metrics_baseline/' + str(folder_num))
 
         results = analyzer.analyze_folder(
             folder_path=folder,
-            output_directory=location + "by_tutor_metrics_baseline/" + str(i),
+            output_directory=location + "by_tutor_metrics_baseline/" + str(folder_num),
             lag=1  # Number of turns to lag (default: 1),
         )
 
