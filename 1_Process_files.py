@@ -90,23 +90,23 @@ def seperate_by_snippet(location, split_file):
     dataframe = dataframe.rename(columns={'utterance': "content"})
     grouped = dataframe.groupby('session_ID')
 
-    for sesh_id, group in grouped:
-        print(sesh_id)
-        group = group.drop('session_ID', axis=1)
-        tutor_id = str(group['tutor_ID'].iloc[0])
-        date = str(group['session_date'].iloc[0])
-        time = str(group['session_time'].iloc[0])
-        group = group.drop('tutor_ID', axis=1)
-        group = group.drop('session_date', axis=1)
-        group = group.drop('session_time', axis=1)
-        group.reset_index(drop=True, inplace=True)
-
-
-        name = tutor_id + ")(" + date.replace("/", "-") + ")(" + time.replace(":", "-") + ")(" + sesh_id
-        print(name)
-
-        # seperate_by_timing(group, location + "convos_by_tutor/", name, split_file)
-        create_baseline(group, location + "baseline/", name, split_file)
+    # for sesh_id, group in grouped:
+    #     print(sesh_id)
+    #     group = group.drop('session_ID', axis=1)
+    #     tutor_id = str(group['tutor_ID'].iloc[0])
+    #     date = str(group['session_date'].iloc[0])
+    #     time = str(group['session_time'].iloc[0])
+    #     group = group.drop('tutor_ID', axis=1)
+    #     group = group.drop('session_date', axis=1)
+    #     group = group.drop('session_time', axis=1)
+    #     group.reset_index(drop=True, inplace=True)
+    #
+    #
+    #     name = tutor_id + ")(" + date.replace("/", "-") + ")(" + time.replace(":", "-") + ")(" + sesh_id
+    #     print(name)
+    #
+    #     # seperate_by_timing(group, location + "convos_by_tutor/", name, split_file)
+    #     create_baseline(group, location + "baseline/", name, split_file)
 
     # prepped_df = align_prepare_transcripts.prepare_transcripts(input_files=location+"convos_by_tutor/", output_file_directory=location+ "processed/",
     #                                        run_spell_check=False, input_as_directory=True, minwords=1)
