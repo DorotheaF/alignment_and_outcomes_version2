@@ -11,8 +11,8 @@ def consolidate_files(location):
     i = 0
     dataframes = []
     for folder in folders[1:len(folders)]:
-        folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups-sd3-n1.csv')
-        # folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups.csv')
+        # folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups-sd3-n1.csv')
+        folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups.csv')
         bert_frame = pd.read_csv(folder+'/bert/semantic_alignment_bert-base-uncased_lag1.csv')
         folder_frame['bert_semantic'] = bert_frame['bert-base-uncased_cosine_similarity']
         folder_frame[['tutor_id', 'date', 'session_time', 'condition_info']] = folder_frame['source_file'].str.split(r'\)\(', expand=True, n=3)
