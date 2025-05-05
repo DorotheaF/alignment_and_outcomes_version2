@@ -24,7 +24,9 @@ def calculate_alignment(location, token, start_folder, end_folder):
         print("FOLDER NUMBER " + str(folder_num) + " list num " + str(i))
         print("here")
         print(folder)
-        os.makedirs(location + '/by_tutor_metrics/' + str(folder_num))
+        isExist = os.path.exists(location + '/by_tutor_metrics/' + str(folder_num))
+        if not isExist:
+            os.makedirs(location + '/by_tutor_metrics/' + str(folder_num))
 
         results = analyzer.analyze_folder(
             folder_path=folder,
@@ -39,7 +41,9 @@ def calculate_alignment(location, token, start_folder, end_folder):
         print("FOLDER NUMBER " + str(folder_num) + " list num " + str(i))
         print("here")
         print(folder)
-        os.makedirs(location + '/by_tutor_metrics_baseline/' + str(folder_num))
+        isExist = os.path.exists(location + '/by_tutor_metrics_baseline/' + str(folder_num))
+        if not isExist:
+            os.makedirs(location + '/by_tutor_metrics_baseline/' + str(folder_num))
 
         results = analyzer.analyze_folder(
             folder_path=folder,
