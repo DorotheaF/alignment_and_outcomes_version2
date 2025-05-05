@@ -6,6 +6,7 @@ import pandas as pd
 def consolidate_files(location):
     print("looking in folder " + location)
     folders = [x[0] for x in os.walk(location)]
+    print(folders)
     folders = [s for s in folders if 'bert' not in s and 'fasttext' not in s and 'lexsyn' not in s]
     print(folders)
     print("before loop")
