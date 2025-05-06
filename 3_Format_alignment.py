@@ -60,7 +60,7 @@ def consolidate_files(location):
 
 
 def sum_by_student_and_tutor(location, level="none"):
-    alignment_full = pd.read_csv( location +  '/merged_all_alignment.csv')
+    alignment_full = pd.read_csv( location +  '/merged_all_alignment_incomplete.csv')
 
     partner_pair_list = [["student", "tutor"]]
     for duo in partner_pair_list:
@@ -94,7 +94,7 @@ def sum_by_student_and_tutor(location, level="none"):
                 row_sum['num_utt'] = len(group)
                 summed_rows.append(row_sum)
 
-            print(summed_rows)
+            # print(summed_rows)
             summed_by_student_to_tutor = pd.concat(summed_rows, axis=1).T
             # summed_by_student_to_tutor.set_index('partner_pair', inplace=True)
             # summed_by_student_to_tutor = pd.DataFrame(summed_by_student_to_tutor)
@@ -109,11 +109,11 @@ def sum_by_student_and_tutor(location, level="none"):
 
 
 
-# location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/by_tutor_metrics/"
-location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics/"
-consolidate_files(location)
-location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics_baseline/"
-consolidate_files(location)
-# sum_by_student_and_tutor(location)
-# sum_by_student_and_tutor(location, "snippet")
-# sum_by_student_and_tutor(location, "transcript")
+location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/ASR_full/by_tutor_metrics/"
+# location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics/"
+# consolidate_files(location)
+# location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics_baseline/"
+# consolidate_files(location)
+sum_by_student_and_tutor(location)
+sum_by_student_and_tutor(location, "snippet")
+sum_by_student_and_tutor(location, "transcript")
