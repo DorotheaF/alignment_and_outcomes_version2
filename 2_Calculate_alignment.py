@@ -39,7 +39,7 @@ def calculate_alignment(location, token, start_folder, end_folder):
 
     baseline_already_done = [x[0] for x in os.walk(location + "/by_tutor_metrics_baseline/")]
 
-    for folder in folders_baseline[start_folder+1:end_folder+2]:
+    for folder in folders_baseline[start_folder+1:end_folder+2+1]:
         print("this is baseline folder: " + folder)
 
         # if os.path.exists(folder.replace("baseline_processed", "by_tutor_metrics_baseline") + '/merged-lag1-ngram2-noStan-noDups.csv'):
