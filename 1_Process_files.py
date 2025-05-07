@@ -90,37 +90,37 @@ def seperate_by_snippet(location, split_file):
     dataframe = dataframe.rename(columns={'utterance': "content"})
     grouped = dataframe.groupby('session_ID')
 
-    # for sesh_id, group in grouped:
-    #     print(sesh_id)
-    #     group = group.drop('session_ID', axis=1)
-    #     tutor_id = str(group['tutor_ID'].iloc[0])
-    #     date = str(group['session_date'].iloc[0])
-    #     time = str(group['session_time'].iloc[0])
-    #     group = group.drop('tutor_ID', axis=1)
-    #     group = group.drop('session_date', axis=1)
-    #     group = group.drop('session_time', axis=1)
-    #     group.reset_index(drop=True, inplace=True)
-    #
-    #
-    #     name = tutor_id + ")(" + date.replace("/", "-") + ")(" + time.replace(":", "-") + ")(" + sesh_id
-    #     print(name)
-    #
-    #     # seperate_by_timing(group, location + "convos_by_tutor/", name, split_file)
-    #     create_baseline(group, location + "baseline/", name, split_file)
+    for sesh_id, group in grouped:
+        print(sesh_id)
+        group = group.drop('session_ID', axis=1)
+        tutor_id = str(group['tutor_ID'].iloc[0])
+        date = str(group['session_date'].iloc[0])
+        time = str(group['session_time'].iloc[0])
+        group = group.drop('tutor_ID', axis=1)
+        group = group.drop('session_date', axis=1)
+        group = group.drop('session_time', axis=1)
+        group.reset_index(drop=True, inplace=True)
 
-    # prepped_df = align_prepare_transcripts.prepare_transcripts(input_files=location+"convos_by_tutor/", output_file_directory=location+ "processed/",
-    #                                        run_spell_check=False, input_as_directory=True, minwords=1)
 
-    # files = glob.glob(location + "processed/*.txt")
-    # chunks = [files[x:x + 100] for x in range(0, len(files), 100)]
-    # for index, chunk in enumerate(chunks):
-    #     print(index)
-    #     save_path = location + "processed/" + str(index)
-    #     isExist = os.path.exists(save_path)
-    #     if not isExist:
-    #         os.makedirs(save_path)
-    #     for file in chunk:
-    #         os.rename(file, file.replace('processed', 'processed/' + str(index)))
+        name = tutor_id + ")(" + date.replace("/", "-") + ")(" + time.replace(":", "-") + ")(" + sesh_id
+        print(name)
+
+        seperate_by_timing(group, location + "convos_by_tutor/", name, split_file)
+        create_baseline(group, location + "baseline/", name, split_file)
+
+    prepped_df = align_prepare_transcripts.prepare_transcripts(input_files=location+"convos_by_tutor/", output_file_directory=location+ "processed/",
+                                           run_spell_check=False, input_as_directory=True, minwords=1)
+
+    files = glob.glob(location + "processed/*.txt")
+    chunks = [files[x:x + 100] for x in range(0, len(files), 100)]
+    for index, chunk in enumerate(chunks):
+        print(index)
+        save_path = location + "processed/" + str(index)
+        isExist = os.path.exists(save_path)
+        if not isExist:
+            os.makedirs(save_path)
+        for file in chunk:
+            os.rename(file, file.replace('processed', 'processed/' + str(index)))
 
     prepped_df = align_prepare_transcripts.prepare_transcripts(input_files=location + "baseline/",
                                            output_file_directory=location + "baseline_processed/",
@@ -194,15 +194,12 @@ def from_raw(location, raw_filename):
     print("saving")
     dataframe.to_csv(location + 'raw/full_data_processed_once.csv', index=False)
 
-# location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/sample_ASR_data_no_split/"
-location = "/projects/dofr2963/align_out_2/data/ASR_full/"
-raw_filename = "hat-utterances_2023-08-01-to-2024-06-11.csv"
-# location = "/projects/dofr2963/align_out_2/data/ASR_sample/"
-# raw_filename = "HAT Session Utterances - Sample Export for Review.xlsx"
+location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/Human_data_new/"
+# location = "/projects/dofr2963/align_out_2/data/ASR_full/"
+# raw_filename = "hat-utterances_2023-08-01-to-2024-06-11.csv"
 # print("loading from " + location + raw_filename)
 # from_raw(location, raw_filename)
 # print("tagging others")
 # tag_others(location)
 print("delineating by snippet")
 seperate_by_snippet(location, False)
-
