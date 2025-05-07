@@ -15,7 +15,7 @@ def calculate_alignment(location, token, start_folder, end_folder):
     # print(folders_gold[end_folder+1])
 
     # Initialize the analyzer
-    analyzer = LinguisticAlignment(alignment_types=["bert", "lexsyn"], #"fasttext",
+    analyzer = LinguisticAlignment(alignment_types=["lexsyn"], # "bert", "fasttext",
                                    token = token)
 
     for folder in folders_gold[start_folder+1:end_folder+2]:
@@ -31,6 +31,7 @@ def calculate_alignment(location, token, start_folder, end_folder):
         results = analyzer.analyze_folder(
             folder_path=folder,
             output_directory=location + "by_tutor_metrics/"+ str(folder_num),
+            ignore_duplicates=False,
             lag=1  # Number of turns to lag (default: 1),
         )
         i += 1
@@ -41,24 +42,25 @@ def calculate_alignment(location, token, start_folder, end_folder):
     for folder in folders_baseline[start_folder+1:end_folder+2]:
         print("this is baseline folder: " + folder)
 
-        if os.path.exists(folder.replace("baseline_processed", "by_tutor_metrics_baseline") + '/merged-lag1-ngram2-noStan-noDups.csv'):
-            print("already did folder")
-        else:
-            folder_num = folder.rsplit("/",1)[1]
-            print("FOLDER NUMBER " + str(folder_num) + " list num " + str(i))
-            print("here")
-            print(folder)
-            isExist = os.path.exists(location + '/by_tutor_metrics_baseline/' + str(folder_num))
-            if not isExist:
-                os.makedirs(location + '/by_tutor_metrics_baseline/' + str(folder_num))
+        # if os.path.exists(folder.replace("baseline_processed", "by_tutor_metrics_baseline") + '/merged-lag1-ngram2-noStan-noDups.csv'):
+        #     print("already did folder")
+        # else:
+        folder_num = folder.rsplit("/",1)[1]
+        print("FOLDER NUMBER " + str(folder_num) + " list num " + str(i))
+        print("here")
+        print(folder)
+        isExist = os.path.exists(location + '/by_tutor_metrics_baseline/' + str(folder_num))
+        if not isExist:
+            os.makedirs(location + '/by_tutor_metrics_baseline/' + str(folder_num))
 
-            results = analyzer.analyze_folder(
-                folder_path=folder,
-                output_directory=location + "by_tutor_metrics_baseline/" + str(folder_num),
-                lag=1  # Number of turns to lag (default: 1),
-            )
+        results = analyzer.analyze_folder(
+            folder_path=folder,
+            output_directory=location + "by_tutor_metrics_baseline/" + str(folder_num),
+            ignore_duplicates=False,
+            lag=1  # Number of turns to lag (default: 1),
+        )
 
-            i += 1
+        i += 1
 
 
 

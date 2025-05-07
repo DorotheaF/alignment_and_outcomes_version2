@@ -88,10 +88,10 @@ def tag_others(location):
     print(len(other))
 
     dataframe["speaker_1_role"] = dataframe.apply(
-        lambda x: "other" if x["speaker_1_ID"] in non_student_IDs and x["speaker_1_ID"] != x["tutor_id"] else x[
+        lambda x: "other" if x["speaker_1_ID"] in non_student_IDs and x["speaker_1_ID"] != x["tutor"] else x[
             "speaker_1_role"], axis=1)
     dataframe["speaker_2_role"] = dataframe.apply(
-        lambda x: "other" if x["speaker_2_ID"] in non_student_IDs and x["speaker_2_ID"] != x["tutor_id"] else x[
+        lambda x: "other" if x["speaker_2_ID"] in non_student_IDs and x["speaker_2_ID"] != x["tutor"] else x[
             "speaker_2_role"], axis=1)
 
     dataframe["speaker_1_role"] = dataframe.apply(
@@ -106,7 +106,7 @@ def tag_others(location):
     dataframe['speaker_1_ID'] = dataframe['speaker_1_ID'].apply(lambda x: str(x))
     dataframe['speaker_2_ID'] = dataframe['speaker_2_ID'].apply(lambda x: str(x))
 
-    dataframe['tutor'] = dataframe["tutor_id"]
+    dataframe['tutor'] = dataframe["tutor"]
     dataframe['prev_speaker'] = dataframe['speaker_1_role'].str.cat(dataframe['speaker_1_ID'], sep='_')
     dataframe['speaker'] = dataframe['speaker_2_role'].str.cat(dataframe['speaker_2_ID'], sep='_')
 
@@ -170,13 +170,13 @@ def sum_by_student_and_tutor(location, level="none"):
 
 
 
-# location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/Human_data_new/by_tutor_metrics_baseline/"
+location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/ASR_full/by_tutor_metrics_baseline/"
 # location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics/"
 # consolidate_files(location)
-location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics_baseline/"
-consolidate_files(location)
-# tag_others(location)
-# sum_by_student_and_tutor(location)
-# sum_by_student_and_tutor(location, "snippet")
-# sum_by_student_and_tutor(location, "transcript")
+# location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics_baseline/"
+# consolidate_files(location)
+tag_others(location)
+sum_by_student_and_tutor(location)
+sum_by_student_and_tutor(location, "snippet")
+sum_by_student_and_tutor(location, "transcript")
 
