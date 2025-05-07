@@ -52,7 +52,7 @@ def consolidate_files(location):
                                    "content2": "content",
                                    "participant": "prev_speaker"}, inplace=True)
     print(mega_dataframe.columns)
-    mega_dataframe = mega_dataframe[["condition_info", "time", "speaker", "prev_speaker", "content", "previous_utterance", "utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic",  "tutor_id", "date", "session_time"]] #"fasttext_semantic",
+    mega_dataframe = mega_dataframe[["condition_info", "time", "speaker", "prev_speaker", "content", "previous_utterance", "utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic",  "tutor", "date", "session_time"]] #"fasttext_semantic",
     mega_dataframe.to_csv(location + "merged_all_alignment.csv", index= False)
     print("saved to merged")
 
@@ -170,7 +170,7 @@ def sum_by_student_and_tutor(location, level="none"):
 
 
 
-# location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/Human_data_new/by_tutor_metrics/"
+# location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/Human_data_new/by_tutor_metrics_baseline/"
 # location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics/"
 # consolidate_files(location)
 location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics_baseline/"
