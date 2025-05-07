@@ -53,7 +53,7 @@ def consolidate_files(location):
                                    "participant": "prev_speaker"}, inplace=True)
     print(mega_dataframe.columns)
     mega_dataframe = mega_dataframe[["condition_info", "time", "speaker", "prev_speaker", "content", "previous_utterance", "utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic",  "tutor_id", "date", "session_time"]] #"fasttext_semantic",
-    mega_dataframe.to_csv(location + "merged_all_alignment_incomplete.csv", index= False)
+    mega_dataframe.to_csv(location + "merged_all_alignment.csv", index= False)
     print("saved to merged")
 
 
