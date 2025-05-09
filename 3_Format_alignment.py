@@ -170,13 +170,13 @@ def sum_by_student_and_tutor(location, level="none"):
 
 
 
-location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/ASR_full/by_tutor_metrics_baseline/"
-# location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics/"
-# consolidate_files(location)
-# location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics_baseline/"
-# consolidate_files(location)
-tag_others(location)
-sum_by_student_and_tutor(location)
-sum_by_student_and_tutor(location, "snippet")
-sum_by_student_and_tutor(location, "transcript")
+# location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/ASR_full/by_tutor_metrics_baseline/"
+location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics/"
+consolidate_files(location)
+location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics_baseline/"
+consolidate_files(location)
+# tag_others(location)
+# sum_by_student_and_tutor(location)
+# sum_by_student_and_tutor(location, "snippet")
+# sum_by_student_and_tutor(location, "transcript")
 
