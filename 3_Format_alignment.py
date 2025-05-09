@@ -14,7 +14,7 @@ def consolidate_files(location):
     dataframes = []
     for folder in folders[1:len(folders)]:
         # folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups-sd3-n1.csv')
-        folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-noDups.csv')
+        folder_frame = pd.read_csv(folder+'/merged-lag1-ngram2-noStan-withDups.csv')
         bert_frame = pd.read_csv(folder+'/bert/semantic_alignment_bert-base-uncased_lag1.csv')
         folder_frame['bert_semantic'] = bert_frame['bert-base-uncased_cosine_similarity']
         folder_frame[['tutor', 'date', 'session_time', 'condition_info']] = folder_frame['source_file'].str.split(r'\)\(', expand=True, n=3)
@@ -170,13 +170,13 @@ def sum_by_student_and_tutor(location, level="none"):
 
 
 
-location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/ASR_full/by_tutor_metrics_baseline/"
-# location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics/"
-# consolidate_files(location)
-# location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics_baseline/"
-# consolidate_files(location)
+# location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/ASR_full/by_tutor_metrics_baseline/"
+location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics/"
+consolidate_files(location)
+location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics_baseline/"
+consolidate_files(location)
 # tag_others(location)
 # sum_by_student_and_tutor(location)
-sum_by_student_and_tutor(location, "snippet")
-sum_by_student_and_tutor(location, "transcript")
+# sum_by_student_and_tutor(location, "snippet")
+# sum_by_student_and_tutor(location, "transcript")
 
