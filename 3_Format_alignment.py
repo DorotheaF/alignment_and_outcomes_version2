@@ -32,6 +32,7 @@ def consolidate_files(location):
                           for i in range(len(split_indices) - 1)]
 
             for snippet_num, subframe in enumerate(sub_frames):
+                subframe = subframe.copy()
                 subframe['condition_info'] = subframe['condition_info'].apply(lambda x: x + "_" + str(snippet_num))
                 subframe = subframe[:-1]
                 subframe.reset_index(drop=True, inplace=True)
