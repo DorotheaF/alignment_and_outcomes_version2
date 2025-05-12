@@ -26,7 +26,7 @@ def consolidate_files(location):
             transcript['speaker'] = transcript['participant'].shift(-1)
             # transcript['speaker_id'] = transcript['speaker'].apply(lambda x: x.split("_")[1])
             split_indices = [-1] + transcript.index[transcript['participant'] == 'TO_DROP_NULL'].tolist() + [len(transcript)]
-            print(split_indices)
+            # print(split_indices)
 
             sub_frames = [transcript[split_indices[i] + 1:split_indices[i + 1]]
                           for i in range(len(split_indices) - 1)]
@@ -39,7 +39,7 @@ def consolidate_files(location):
                 subframe.index += 1
                 subframe['time'] = subframe.index
                 sub_frames[snippet_num] = subframe
-            print(len(sub_frames))
+            # print(len(sub_frames))
 
             reset_transcript = pd.concat(sub_frames)
             dataframes.append(reset_transcript)
