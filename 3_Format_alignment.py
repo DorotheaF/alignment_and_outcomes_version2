@@ -22,6 +22,7 @@ def consolidate_files(location):
         transcript_df_groups = folder_frame.groupby('condition_info')
         for label, transcript in transcript_df_groups:
             transcript.reset_index(inplace=True)
+
             transcript['speaker'] = transcript['participant'].shift(-1)
             # transcript['speaker_id'] = transcript['speaker'].apply(lambda x: x.split("_")[1])
             split_indices = [-1] + transcript.index[transcript['participant'] == 'TO_DROP_NULL'].tolist() + [len(transcript)]
@@ -41,6 +42,22 @@ def consolidate_files(location):
 
             reset_transcript = pd.concat(sub_frames)
             dataframes.append(reset_transcript)
+            transcript.rename(columns={
+                # 'BERT_BERT-BASE-UNCASED_COSINE_SIMILARITY': 'bert_semantic',
+                # 'lemma_fasttext-wiki-news-300_cosine_similarity': 'fasttext_semantic',
+                'pos_tok2_cosine': 'syntax', 'lexical_lem1_cosine': 'lexical',
+                'lexical_lem2_cosine': 'lexical_bigram',
+                "content": "previous_utterance",
+                "content2": "content",
+                "participant": "prev_speaker"}, inplace=True)
+            try:
+                transcript[["utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "tutor"]] = \
+                    transcript[["utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "tutor"]].apply(
+                        pd.to_numeric)
+            except:
+                print("failed")
+                print(folder)
+                print(transcript)
 
     mega_dataframe = pd.concat(dataframes)
     mega_dataframe.rename(columns={
@@ -144,12 +161,19 @@ def sum_by_student_and_tutor(location, level="none"):
             alignment = alignment[["partner_pair", "utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic",  "tutor"]] #"fasttext_semantic",
             print(alignment.columns)
 
-            alignment[["utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "tutor"]] = alignment[  #"fasttext_semantic",
-                ["utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "tutor"]].apply(pd.to_numeric)  #"fasttext_semantic",
 
             summed_rows = []
             group_by_pair = alignment.groupby('partner_pair')
             for pair, group in group_by_pair:
+                try:
+                    pair[["utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "tutor"]] = \
+                    pair[  # "fasttext_semantic",
+                        ["utterance_length2", "lexical", "lexical_bigram", "syntax", "bert_semantic", "tutor"]].apply(
+                        pd.to_numeric)  # "fasttext_semantic",
+                except:
+                    print("failed")
+                    print(pair)
+
                 row_sum = group.sum(numeric_only=True)/len(group)
                 row_sum['partner_pair'] = pair
                 row_sum['num_utt'] = len(group)
@@ -170,13 +194,13 @@ def sum_by_student_and_tutor(location, level="none"):
 
 
 
-# location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/ASR_full/by_tutor_metrics_baseline/"
-location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics/"
-consolidate_files(location)
-location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics_baseline/"
-consolidate_files(location)
+location = "C:/Users/Dorot/Emotive Computing Dropbox/Dorothea French/Linguistic_Alignment_and_Outcomes/data/ASR_full/by_tutor_metrics/"
+# location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics/"
+# consolidate_files(location)
+# location = "/projects/dofr2963/align_out_2/data/ASR_full/by_tutor_metrics_baseline/"
+# consolidate_files(location)
 # tag_others(location)
-# sum_by_student_and_tutor(location)
-# sum_by_student_and_tutor(location, "snippet")
-# sum_by_student_and_tutor(location, "transcript")
+sum_by_student_and_tutor(location)
+sum_by_student_and_tutor(location, "snippet")
+sum_by_student_and_tutor(location, "transcript")
 
